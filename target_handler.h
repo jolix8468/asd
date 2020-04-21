@@ -87,8 +87,8 @@ typedef struct event_configuration
 
 typedef enum
 {
-    BMC_TCK_MUX_SEL = 0,
-    BMC_PREQ_N,
+    //BMC_TCK_MUX_SEL = 0,
+    BMC_PREQ_N = 0,
     BMC_PRDY_N,
     BMC_RSMRST_B,
     BMC_CPU_PWRGD,
@@ -96,11 +96,11 @@ typedef enum
     BMC_SYSPWROK,
     BMC_PWR_DEBUG_N, // sampled at power on for early break.
     BMC_DEBUG_EN_N,
-    BMC_XDP_PRST_IN,
+    //BMC_XDP_PRST_IN,
     POWER_BTN,
     RESET_BTN
 } Target_Control_GPIOS;
-#define NUM_GPIOS 10
+#define NUM_GPIOS 8
 
 // Maps from ASD Protocol pin definitions to BMC GPIOs
 static const Target_Control_GPIOS ASD_PIN_TO_GPIO[] = {
