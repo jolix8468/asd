@@ -331,7 +331,7 @@ STATUS target_initialize(Target_Control_Handle* state)
 
     if (result == ST_OK)
     {
-        read_pin_value(state->gpios[BMC_XDP_PRST_IN], &value, &result);
+        /*read_pin_value(state->gpios[BMC_XDP_PRST_IN], &value, &result);
         if (result != ST_OK)
         {
             ASD_log(ASD_LogLevel_Error, stream, option,
@@ -342,7 +342,7 @@ STATUS target_initialize(Target_Control_Handle* state)
             result = ST_ERR;
             ASD_log(ASD_LogLevel_Error, stream, option,
                     "XDP Presence Detected");
-        }
+        }*/
     }
 
     // specifically drive debug enable to assert
