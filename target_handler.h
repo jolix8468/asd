@@ -111,7 +111,7 @@ static const Target_Control_GPIOS ASD_PIN_TO_GPIO[] = {
     BMC_PWR_DEBUG_N, // PIN_EARLY_BOOT_STALL
     BMC_SYSPWROK,    // PIN_SYS_PWR_OK
     BMC_PRDY_N,      // PIN_PRDY
-    BMC_TCK_MUX_SEL, // PIN_TCK_MUX_SELECT
+    //BMC_TCK_MUX_SEL, // PIN_TCK_MUX_SELECT
 };
 
 #define NUM_DBUS_FDS 1
