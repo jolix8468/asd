@@ -148,12 +148,13 @@ Target_Control_Handle* TargetHandler()
         state->gpios[i].type = PIN_GPIOD;
     }
 
-    /*strcpy_safe(state->gpios[BMC_TCK_MUX_SEL].name,
+    strcpy_safe(state->gpios[BMC_TCK_MUX_SEL].name,
                 sizeof(state->gpios[BMC_TCK_MUX_SEL].name), "TCK_MUX_SEL",
                 sizeof("TCK_MUX_SEL"));
-    state->gpios[BMC_TCK_MUX_SEL].direction = GPIO_DIRECTION_LOW;
-    state->gpios[BMC_TCK_MUX_SEL].edge = GPIO_EDGE_NONE;
-    */
+    state->gpios[BMC_TCK_MUX_SEL].direction = GPIO_DIRECTION_OUT;
+    state->gpios[BMC_TCK_MUX_SEL].edge = GPIO_EDGE_NONE;     
+    state->gpios[BMC_TCK_MUX_SEL].active_low = true;
+
     strcpy_safe(state->gpios[BMC_PREQ_N].name,
                 sizeof(state->gpios[BMC_PREQ_N].name), "PREQ_N",
                 sizeof("PREQ_N"));
@@ -208,13 +209,13 @@ Target_Control_Handle* TargetHandler()
     state->gpios[BMC_DEBUG_EN_N].edge = GPIO_EDGE_NONE;
     state->gpios[BMC_DEBUG_EN_N].active_low = true;
 
-    /*strcpy_safe(state->gpios[BMC_XDP_PRST_IN].name,
+    strcpy_safe(state->gpios[BMC_XDP_PRST_IN].name,
                 sizeof(state->gpios[BMC_XDP_PRST_IN].name), "XDP_PRST_N",
                 sizeof("XDP_PRST_N"));
-    state->gpios[BMC_XDP_PRST_IN].direction = GPIO_DIRECTION_IN;
-    state->gpios[BMC_XDP_PRST_IN].active_low = true;
-    state->gpios[BMC_XDP_PRST_IN].edge = GPIO_EDGE_BOTH;
-    */
+    state->gpios[BMC_XDP_PRST_IN].direction = GPIO_DIRECTION_OUT;
+    state->gpios[BMC_XDP_PRST_IN].active_low = false;           
+    state->gpios[BMC_XDP_PRST_IN].edge = GPIO_EDGE_NONE;
+
     platform_init(state);
 
     state->event_cfg.break_all = false;
@@ -228,8 +229,8 @@ Target_Control_Handle* TargetHandler()
         (TargetHandlerEventFunctionPtr)on_platform_reset_event;
     state->gpios[BMC_PRDY_N].handler =
         (TargetHandlerEventFunctionPtr)on_prdy_event;
-    //state->gpios[BMC_XDP_PRST_IN].handler =
-    //    (TargetHandlerEventFunctionPtr)on_xdp_present_event;
+    state->gpios[BMC_XDP_PRST_IN].handler =
+        (TargetHandlerEventFunctionPtr)on_xdp_present_event;
 
     // Change is_master_probe accordingly on your BMC implementations.
     // <MODIFY>
@@ -295,7 +296,7 @@ STATUS platform_init(Target_Control_Handle* state)
                                 "Disable XDP Presence pin for platform: 0x%x",
                                 pid);
 #endif
-                        //state->gpios[BMC_XDP_PRST_IN].type = PIN_NONE;
+                        state->gpios[BMC_XDP_PRST_IN].type = PIN_NONE;
                     }
                 }
                 else
@@ -331,7 +332,7 @@ STATUS target_initialize(Target_Control_Handle* state)
 
     if (result == ST_OK)
     {
-        /*read_pin_value(state->gpios[BMC_XDP_PRST_IN], &value, &result);
+        read_pin_value(state->gpios[BMC_XDP_PRST_IN], &value, &result);
         if (result != ST_OK)
         {
             ASD_log(ASD_LogLevel_Error, stream, option,
@@ -342,7 +343,7 @@ STATUS target_initialize(Target_Control_Handle* state)
             result = ST_ERR;
             ASD_log(ASD_LogLevel_Error, stream, option,
                     "XDP Presence Detected");
-        }*/
+        }
     }
 
     // specifically drive debug enable to assert
@@ -686,9 +687,9 @@ STATUS find_gpio(char* gpio_name, int* gpio_number)
     result = find_gpio_base(gpio_name, &gpio_base);
     if (result != ST_OK)
         return result;
-    //if (strcmp(gpio_name, "TCK_MUX_SEL") == 0)
-    //    *gpio_number = gpio_base + 213;
-    if (strcmp(gpio_name, "PREQ_N") == 0)
+    if (strcmp(gpio_name, "TCK_MUX_SEL") == 0)
+        *gpio_number = gpio_base + 213;
+    else if (strcmp(gpio_name, "PREQ_N") == 0)
         *gpio_number = gpio_base + 212;
     else if (strcmp(gpio_name, "PRDY_N") == 0)
         *gpio_number = gpio_base + 47;
@@ -704,8 +705,8 @@ STATUS find_gpio(char* gpio_name, int* gpio_number)
         *gpio_number = gpio_base + 135;
     else if (strcmp(gpio_name, "DEBUG_EN_N") == 0)
         *gpio_number = gpio_base + 37;
-    //else if (strcmp(gpio_name, "XDP_PRST_N") == 0)
-    //    *gpio_number = gpio_base + 63;
+    else if (strcmp(gpio_name, "XDP_PRST_N") == 0)
+        *gpio_number = gpio_base + 137;
     else
         result = ST_ERR;
 
@@ -1329,13 +1330,13 @@ STATUS target_get_fds(Target_Control_Handle* state, target_fdarr_t* fds,
         }
     }
 
-    /*get_pin_events(state->gpios[BMC_XDP_PRST_IN], &events);
+    get_pin_events(state->gpios[BMC_XDP_PRST_IN], &events);
     if (state->gpios[BMC_XDP_PRST_IN].fd != -1)
     {
         (*fds)[index].fd = state->gpios[BMC_XDP_PRST_IN].fd;
         (*fds)[index].events = events;
         index++;
-    }*/
+    }
 
     if (state->dbus && state->dbus->fd != -1)
     {
