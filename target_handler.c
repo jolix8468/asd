@@ -706,7 +706,7 @@ STATUS find_gpio(char* gpio_name, int* gpio_number)
     else if (strcmp(gpio_name, "DEBUG_EN_N") == 0)
         *gpio_number = gpio_base + 37;
     else if (strcmp(gpio_name, "XDP_PRST_N") == 0)
-        *gpio_number = gpio_base + 137;
+        *gpio_number = gpio_base + 63;
     else
         result = ST_ERR;
 
